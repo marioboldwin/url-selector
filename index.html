@@ -1,0 +1,58 @@
+<script>
+async function loadProducts() {
+  const response = await fetch('./products.json');
+  const sections = await response.json();
+
+  Object.keys(sections).forEach(sectionId => {
+    const container = document.getElementById(sectionId);
+    if (!container) return;
+
+    sections[sectionId].forEach(product => {
+      const button = document.createElement('button');
+      button.className = 'product-button';
+      button.dataset.url = product.url;
+
+      const img = document.createElement('img');
+      img.src = product.image;
+      img.alt = product.name;
+
+      const label = document.createElement('span');
+      label.textContent = product.name;
+
+      button.appendChild(img);
+      button.appendChild(label);
+
+      button.addEventListener('click', () => {
+        button.classList.toggle('selected');
+      });
+
+      container.appendChild(button);
+    });
+  });
+}
+
+loadProducts();
+
+/* Existing logic stays the same */
+document.getElementById('selectAll').onclick = () => {
+  document.querySelectorAll('.product-button').forEach(b => b.classList.add('selected'));
+};
+
+document.getElementById('clearSelection').onclick = () => {
+  document.querySelectorAll('.product-button').forEach(b => b.classList.remove('selected'));
+};
+
+document.getElementById('showSelected').onclick = () => {
+  const urls = [...document.querySelectorAll('.product-button.selected')]
+    .map(b => b.dataset.url)
+    .join('\n');
+
+  document.getElementById('output').value = urls;
+  document.getElementById('outputContainer').style.display = 'block';
+};
+
+document.getElementById('copyOutput').onclick = () => {
+  document.getElementById('output').select();
+  document.execCommand('copy');
+};
+</script>
