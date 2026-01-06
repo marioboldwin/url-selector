@@ -104,75 +104,93 @@
 </div>
 
 <script>
-async function loadProducts() {
-  try {
-    const response = await fetch('./products.json');
-    if (!response.ok) throw new Error('products.json not found');
+/* 🔗 GOOGLE SHEETS CSV URL */
+const SHEET_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTON_uOP5bs7isuticLGc3mjQTpG-V2lUAKtyvjtxeIjRBOnUcWAWGUpdaw-7qSqr9kf1kzgU3NGSo2/pub?output=csv";
 
-    const sections = await response.json();
+async function loadProductsFromSheet() {
+  try {
+    const response = await fetch(SHEET_URL);
+    if (!response.ok) throw new Error("Failed to fetch Google Sheet");
+
+    const csvText = await response.text();
+    const lines = csvText.split("\n").slice(1); // skip header
+
+    const sections = {};
+
+    lines.forEach(line => {
+      if (!line.trim()) return;
+
+      const values = line.split(",");
+      const section = values[0]?.trim();
+      const name = values[1]?.trim();
+      const url = values[2]?.trim();
+      const image = values[3]?.trim();
+
+      if (!section || !name || !url) return;
+
+      if (!sections[section]) sections[section] = [];
+      sections[section].push({ name, url, image });
+    });
 
     Object.keys(sections).forEach(sectionId => {
       const container = document.getElementById(sectionId);
       if (!container) return;
 
       sections[sectionId].forEach(product => {
-        const button = document.createElement('button');
-        button.className = 'product-button';
+        const button = document.createElement("button");
+        button.className = "product-button";
         button.dataset.url = product.url;
 
-        const img = document.createElement('img');
-        img.src = product.image;
+        const img = document.createElement("img");
+        img.src = product.image || "https://via.placeholder.com/100?text=Product";
         img.alt = product.name;
 
-        const label = document.createElement('span');
+        const label = document.createElement("span");
         label.textContent = product.name;
 
         button.appendChild(img);
         button.appendChild(label);
 
-        button.addEventListener('click', () => {
-          button.classList.toggle('selected');
-        });
-
+        button.onclick = () => button.classList.toggle("selected");
         container.appendChild(button);
       });
     });
   } catch (err) {
-    alert('Failed to load products.json');
     console.error(err);
+    alert("Failed to load products from Google Sheets");
   }
 }
 
-loadProducts();
+loadProductsFromSheet();
 
-/* Controls */
-document.getElementById('selectAll').onclick = () => {
-  document.querySelectorAll('.product-button')
-    .forEach(b => b.classList.add('selected'));
+/* ACTION BUTTONS */
+document.getElementById("selectAll").onclick = () =>
+  document.querySelectorAll(".product-button")
+    .forEach(b => b.classList.add("selected"));
+
+document.getElementById("clearSelection").onclick = () => {
+  document.querySelectorAll(".product-button")
+    .forEach(b => b.classList.remove("selected"));
+
+  document.getElementById("output").value = "";
+  document.getElementById("outputContainer").style.display = "none";
 };
 
-document.getElementById('clearSelection').onclick = () => {
-  document.querySelectorAll('.product-button')
-    .forEach(b => b.classList.remove('selected'));
-
-  document.getElementById('output').value = '';
-  document.getElementById('outputContainer').style.display = 'none';
-};
-
-document.getElementById('showSelected').onclick = () => {
-  const urls = [...document.querySelectorAll('.product-button.selected')]
+document.getElementById("showSelected").onclick = () => {
+  const urls = [...document.querySelectorAll(".product-button.selected")]
     .map(b => b.dataset.url)
-    .join('\n');
+    .join("\n");
 
-  document.getElementById('output').value = urls;
-  document.getElementById('outputContainer').style.display = 'block';
+  document.getElementById("output").value = urls;
+  document.getElementById("outputContainer").style.display = "block";
 };
 
-document.getElementById('copyOutput').onclick = () => {
-  const output = document.getElementById('output');
+document.getElementById("copyOutput").onclick = () => {
+  const output = document.getElementById("output");
   output.select();
-  document.execCommand('copy');
-  alert('Copied!');
+  document.execCommand("copy");
+  alert("Copied!");
 };
 </script>
 </body>
