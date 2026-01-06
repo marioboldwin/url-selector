@@ -1,45 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product URL Selector</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+
+  h2 {
+    margin-top: 30px;
+  }
+
+  .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .product-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 140px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    border-radius: 6px;
+    gap: 6px;
+  }
+
+  .product-button img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+
+  .product-button span {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .product-button.selected {
+    border: 2px solid #007BFF;
+    background-color: #eef5ff;
+  }
+
+  #actionButtons {
+    margin-top: 40px;
+    text-align: center;
+  }
+
+  #actionButtons button {
+    margin: 8px;
+    padding: 12px 25px;
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #outputContainer {
+    margin-top: 20px;
+    display: none;
+  }
+
+  textarea {
+    width: 100%;
+    height: 120px;
+  }
+</style>
+</head>
+
+<body>
+<h1>Product URL Selector</h1>
+
+<h2>Section 1</h2>
+<div class="button-container" id="section1"></div>
+
+<h2>Section 2</h2>
+<div class="button-container" id="section2"></div>
+
+<h2>Section 3</h2>
+<div class="button-container" id="section3"></div>
+
+<div id="actionButtons">
+  <button id="selectAll">Select All</button>
+  <button id="showSelected">Show Selected URLs</button>
+  <button id="clearSelection">Clear Selection</button>
+</div>
+
+<div id="outputContainer">
+  <h2>Selected URLs</h2>
+  <textarea id="output"></textarea><br><br>
+  <button id="copyOutput">Copy to Clipboard</button>
+</div>
+
 <script>
 async function loadProducts() {
-  const response = await fetch('./products.json');
-  const sections = await response.json();
+  try {
+    const response = await fetch('./products.json');
+    if (!response.ok) throw new Error('products.json not found');
 
-  Object.keys(sections).forEach(sectionId => {
-    const container = document.getElementById(sectionId);
-    if (!container) return;
+    const sections = await response.json();
 
-    sections[sectionId].forEach(product => {
-      const button = document.createElement('button');
-      button.className = 'product-button';
-      button.dataset.url = product.url;
+    Object.keys(sections).forEach(sectionId => {
+      const container = document.getElementById(sectionId);
+      if (!container) return;
 
-      const img = document.createElement('img');
-      img.src = product.image;
-      img.alt = product.name;
+      sections[sectionId].forEach(product => {
+        const button = document.createElement('button');
+        button.className = 'product-button';
+        button.dataset.url = product.url;
 
-      const label = document.createElement('span');
-      label.textContent = product.name;
+        const img = document.createElement('img');
+        img.src = product.image;
+        img.alt = product.name;
 
-      button.appendChild(img);
-      button.appendChild(label);
+        const label = document.createElement('span');
+        label.textContent = product.name;
 
-      button.addEventListener('click', () => {
-        button.classList.toggle('selected');
+        button.appendChild(img);
+        button.appendChild(label);
+
+        button.addEventListener('click', () => {
+          button.classList.toggle('selected');
+        });
+
+        container.appendChild(button);
       });
-
-      container.appendChild(button);
     });
-  });
+  } catch (err) {
+    alert('Failed to load products.json');
+    console.error(err);
+  }
 }
 
 loadProducts();
 
-/* Existing logic stays the same */
+/* Controls */
 document.getElementById('selectAll').onclick = () => {
-  document.querySelectorAll('.product-button').forEach(b => b.classList.add('selected'));
+  document.querySelectorAll('.product-button')
+    .forEach(b => b.classList.add('selected'));
 };
 
 document.getElementById('clearSelection').onclick = () => {
-  document.querySelectorAll('.product-button').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.product-button')
+    .forEach(b => b.classList.remove('selected'));
+
+  document.getElementById('output').value = '';
+  document.getElementById('outputContainer').style.display = 'none';
 };
 
 document.getElementById('showSelected').onclick = () => {
@@ -52,7 +169,11 @@ document.getElementById('showSelected').onclick = () => {
 };
 
 document.getElementById('copyOutput').onclick = () => {
-  document.getElementById('output').select();
+  const output = document.getElementById('output');
+  output.select();
   document.execCommand('copy');
+  alert('Copied!');
 };
 </script>
+</body>
+</html>
