@@ -3,26 +3,21 @@
     {
       "name": "Glazing Milk",
       "url": "https://www.rhodeskin.com/products/glazing-milk",
-      "image": "https://cdn.shopify.com/s/files/1/0617/4604/2237/products/glazing-milk.png"
-    },
-    {
-      "name": "Pineapple Refresh Cleanser",
-      "url": "https://www.rhodeskin.com/products/pineapple-refresh-cleanser",
-      "image": "https://cdn.shopify.com/s/files/1/0617/4604/2237/products/pineapple-cleanser.png"
+      "image": "https://via.placeholder.com/100?text=Glazing+Milk"
     }
   ],
   "section2": [
     {
       "name": "Lip Case",
       "url": "https://www.rhodeskin.com/products/lip-case",
-      "image": "https://cdn.shopify.com/s/files/1/0617/4604/2237/products/lip-case.png"
+      "image": "https://via.placeholder.com/100?text=Lip+Case"
     }
   ],
   "section3": [
     {
       "name": "The Summer Edit",
       "url": "https://www.rhodeskin.com/products/the-summer-edit",
-      "image": "https://cdn.shopify.com/s/files/1/0617/4604/2237/products/summer-edit.png"
+      "image": "https://via.placeholder.com/100?text=Summer+Edit"
     }
   ]
 }
